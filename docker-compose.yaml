@@ -126,7 +126,10 @@ services:
         test: ["CMD-SHELL", "curl -s http://localhost:${ETL_ELASTIC_PORT}/_cat/health?h=status | grep -q green"]
         retries: 90
         interval: 3s
-
+      deploy:
+        resources:
+          limits:
+            memory: 4GB
     etl_content:
       container_name: "etl_content"
       ports: 
@@ -310,6 +313,10 @@ services:
         test: ["CMD-SHELL", "curl -s http://localhost:${ELK_ELASTIC_PORT}/_cat/health?h=status | grep -q green"]
         retries: 90
         interval: 3s
+      deploy:
+        resources:
+          limits:
+            memory: 4GB
 
     elk-logstash:
       container_name: "elk-logstash"
@@ -326,3 +333,31 @@ services:
       volumes:
         - ./services/elk-logstash/logstash.conf:/config/logstash.conf:ro
       command: logstash -f /config/logstash.conf
+
+    assistant:
+      container_name: assistant
+      build: ./services/assistant
+      volumes:
+        - ./services/assistant:/app:ro
+        - ./services/assistant/logs:/app/logs
+      healthcheck:
+        test: ["CMD-SHELL", "curl -f http://localhost:${ASSISTANT_SERVICE_PORT}/health || exit 1"]
+        retries: 90
+        interval: 3s
+      env_file:
+        - .env
+      depends_on:
+        - content
+
+    elk-assistant-filebeat:
+      container_name: elk-assistant-filebeat
+      build:
+        context: ./services/assistant/filebeat
+      env_file:
+        - .env
+      volumes:
+        - ./services/assistant/logs:/var/app/log
+      depends_on:
+        - assistant
+        - elk-elasticsearch
+        - elk-logstash
