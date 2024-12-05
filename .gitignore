@@ -60,3 +60,6 @@ services/elk-es/data
 
 # kafka data
 services/kafka/data
+
+# assistant data
+services/assistant/data

@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends, File, UploadFile
+
+from services.speech import SpeechService
+from dependencies.speech import get_speech_service
 
 
 router = APIRouter()
@@ -7,10 +10,12 @@ router = APIRouter()
 @router.post("/speech-to-text")
 async def speech_to_text(
     request: Request,
+    file: UploadFile = File(...),
+    speech_service: SpeechService = Depends(get_speech_service),
 ):
-
+    transcript = await speech_service.transcribe_audio(file)
     return {
-        "detail": "ok",
+        "transcript": transcript
     }
 
 
