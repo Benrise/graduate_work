@@ -24,5 +24,10 @@ error_handler = RotatingFileHandler(error_log_file, maxBytes=10_000_000, backupC
 error_handler.setFormatter(formatter)
 error_handler.setLevel(logging.ERROR)
 
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+console_handler.setLevel(logging.INFO)
+
 logger.addHandler(main_handler)
 logger.addHandler(error_handler)
+logger.addHandler(console_handler)
