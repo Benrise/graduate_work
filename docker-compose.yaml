@@ -340,6 +340,7 @@ services:
       volumes:
         - ./services/assistant:/app:ro
         - ./services/assistant/logs:/app/logs
+        - ./services/assistant/data:/app/data
       healthcheck:
         test: ["CMD-SHELL", "curl -f http://localhost:${ASSISTANT_SERVICE_PORT}/health || exit 1"]
         retries: 90

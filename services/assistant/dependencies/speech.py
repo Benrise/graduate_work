@@ -8,4 +8,10 @@ MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "vosk" / "vosk-
 def get_speech_service():
     if not MODEL_PATH.exists():
         raise FileNotFoundError(f"Model not found at path: {MODEL_PATH}")
-    return SpeechService(str(MODEL_PATH))
+    return SpeechService(
+        recognize_model_path=str(MODEL_PATH),
+        speaker_model_id="ru_v3",
+        language="ru",
+        speaker="kseniya",
+        device="cpu"
+    )

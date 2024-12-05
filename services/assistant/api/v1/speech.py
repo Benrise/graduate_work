@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from fastapi import APIRouter, Request, Depends, File, UploadFile
+from fastapi.responses import FileResponse
 
 from services.speech import SpeechService
 from dependencies.speech import get_speech_service
@@ -22,8 +25,13 @@ async def speech_to_text(
 @router.post("/text-to-speech")
 async def text_to_speech(
     request: Request,
+    text: str,
+    speech_service: SpeechService = Depends(get_speech_service),
 ):
 
-    return {
-        "detail": "ok",
-    }
+    output_file = speech_service.text_to_speech(text)
+    return FileResponse(
+        path=str(output_file),
+        media_type="audio/mpeg",
+        headers={"Content-Disposition": "attachment; filename=answer.mp3"}
+    )
