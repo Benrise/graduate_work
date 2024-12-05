@@ -112,6 +112,12 @@
             "analyzer": "ru_en"
           }
         }
+      },
+      "embedding_vectors": { 
+        "type": "dense_vector",
+        "dims": 768,
+        "index": true,
+        "similarity": "dot_product"
       }
     }
   }

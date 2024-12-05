@@ -130,10 +130,9 @@ services:
         resources:
           limits:
             memory: 4GB
+
     etl_content:
       container_name: "etl_content"
-      ports: 
-        - ${ETL_ELASTIC_PORTS}
       build: ./services/etl_content
       volumes:
         - ./services/etl_content:/app:ro
