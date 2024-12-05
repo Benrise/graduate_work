@@ -2,10 +2,6 @@ import json
 from typing import Any, Dict, Text
 
 from utils.logger import logger
-from sentence_transformers import SentenceTransformer
-
-
-EMBEDDING_MODEL = "sentence-transformers/sentence-t5-base"
 
 
 class ElasticLoader:
@@ -13,14 +9,6 @@ class ElasticLoader:
 
     def __init__(self, client: object) -> None:
         self.client = client
-        self.embedding_model = SentenceTransformer(EMBEDDING_MODEL)
-
-    def get_sentence_embeddings(self, text: str) -> list:
-        """
-        Generate sentence embeddings using the configured model.
-        """
-        sentence_embeddings = self.embedding_model.encode(text).tolist()
-        return sentence_embeddings
 
     def create_index(self, index: str, index_data: Text) -> bool:
         """Method to create an index in Elasticsearch."""
@@ -68,85 +56,59 @@ class ElasticLoader:
     def add_movie(self, index: str, data: Dict[str, Any]) -> None:
         """Method to create a film."""
         id = data['uuid']
+        title = data['title']
         rating = 0.0 if not data['imdb_rating'] else data['imdb_rating']
         rating = float(rating)
+        description = data['description']
+        genres = list(data['genres'])
+        actors = data['actors']
+        writers = data['writers']
+        directors = data['directors']
 
         if not self._check_doc_exists(index, id):
-            combined_text = self.generate_combined_text_movie(data)
-            embedding_vector = self.get_sentence_embeddings(combined_text)
-
             self.client.index(
                 index=index,
                 id=id,
                 body={
                     "uuid": f"{id}",
-                    "title": data["title"],
-                    "imdb_rating": float(data["imdb_rating"] or 0.0),
-                    "description": data["description"],
-                    "genres": data["genres"],
-                    "actors": data["actors"],
-                    "writers": data["writers"],
-                    "directors": data["directors"],
-                    "embedding_vectors": embedding_vector
+                    "title": f"{title}",
+                    "imdb_rating": f"{rating}",
+                    "description": f"{description}",
+                    "genres": genres,
+                    "actors": actors,
+                    "writers": writers,
+                    "directors": directors
                 },
             )
-
-            logger.info(f"Added movie: {data['title']}")
 
     def add_person(self, index: str, data: Dict[str, Any]) -> None:
         """Add all information about the persons."""
         person_id = data['uuid']
+        name = data['full_name']
+        films = data['films']
 
         if not self._check_doc_exists(index, person_id):
-            embedding_vector = self.get_sentence_embeddings(data["full_name"])
-
             self.client.index(
                 index=index,
                 id=person_id,
                 body={
                     "uuid": f"{person_id}",
-                    "full_name": data["full_name"],
-                    "films": data["films"],
-                    "embedding_vectors": embedding_vector
+                    "full_name": f"{name}",
+                    "films": films
                 },
             )
 
-            logger.info(f"Added person: {data['full_name']}")
-
     def add_genre(self, index: str, data: Dict[str, Any]) -> None:
-        """Method to add all related data to genres."""
+        """Method to add all ralated data to genres."""
         genre_id = data['uuid']
+        genre = data['name']
 
         if not self._check_doc_exists(index, genre_id):
-            embedding_vector = self.get_sentence_embeddings(data["name"])
-
             self.client.index(
                 index=index,
                 id=genre_id,
                 body={
                     "uuid": f"{genre_id}",
-                    "name": data["name"],
-                    "embedding_vectors": embedding_vector
+                    "name": f"{genre}",
                 },
             )
-
-            logger.info(f"Added genre: {data['name']}")
-
-    def generate_combined_text_movie(self, data: Dict[str, Any]) -> str:
-        """
-        Generate combined text for movies.
-        """
-        def extract_names(items):
-            return [
-                item.get('name') or item.get('full_name') if isinstance(item, dict) else str(item)
-                for item in items
-            ]
-
-        return (
-            f"Title: {data['title']}. "
-            f"Description: {data['description'] or ''}. "
-            f"Genres: {', '.join(extract_names(data['genres']))}. "
-            f"Actors: {', '.join(extract_names(data['actors']))}. "
-            f"Writers: {', '.join(extract_names(data['writers']))}. "
-            f"Directors: {', '.join(extract_names(data['directors']))}."
-        )
