@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from api.v1 import films, genres, persons
+from api.v1 import service
 from core.config import settings
 from core.logger import LOGGING
 from utils.logger import logger
@@ -76,6 +77,7 @@ async def health_check():
 app.include_router(films.router, prefix='/movies/api/v1/films', tags=['films'])
 app.include_router(genres.router, prefix='/movies/api/v1/genres', tags=['genres'])
 app.include_router(persons.router, prefix='/movies/api/v1/persons', tags=['persons'])
+app.include_router(service.router, prefix='/movies/api/v1/service', tags=['service'])
 
 if __name__ == '__main__':
     uvicorn.run(
