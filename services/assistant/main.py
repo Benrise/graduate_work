@@ -10,7 +10,7 @@ from fastapi.responses import ORJSONResponse
 from core.config import settings
 from core.logger import LOGGING
 from utils.logger import logger
-from api.v1 import speech
+from api.v1 import search
 
 
 @asynccontextmanager
@@ -57,7 +57,7 @@ async def health_check():
     }
 
 
-app.include_router(speech.router, prefix='/assistant/api/v1/speech', tags=['speech'])
+app.include_router(search.router, prefix='/assistant/api/v1/search', tags=['search'])
 
 
 if __name__ == '__main__':

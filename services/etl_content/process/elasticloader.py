@@ -98,8 +98,7 @@ class ElasticLoader:
         person_id = data['uuid']
 
         if not self._check_doc_exists(index, person_id):
-            combined_text = self.generate_combined_text_movie(data)
-            embedding_vector = self.get_sentence_embeddings(combined_text)
+            embedding_vector = self.get_sentence_embeddings(data["full_name"])
 
             self.client.index(
                 index=index,
@@ -119,8 +118,7 @@ class ElasticLoader:
         genre_id = data['uuid']
 
         if not self._check_doc_exists(index, genre_id):
-            combined_text = self.generate_combined_text_genre(data)
-            embedding_vector = self.get_sentence_embeddings(combined_text)
+            embedding_vector = self.get_sentence_embeddings(data["name"])
 
             self.client.index(
                 index=index,
@@ -128,7 +126,6 @@ class ElasticLoader:
                 body={
                     "uuid": f"{genre_id}",
                     "name": data["name"],
-                    "combined_text": combined_text,
                     "embedding_vectors": embedding_vector
                 },
             )
@@ -153,18 +150,3 @@ class ElasticLoader:
             f"Writers: {', '.join(extract_names(data['writers']))}. "
             f"Directors: {', '.join(extract_names(data['directors']))}."
         )
-
-    def generate_combined_text_person(self, data: Dict[str, Any]) -> str:
-        """
-        Generate combined text for persons.
-        """
-        return (
-            f"Name: {data['full_name']}. "
-            f"Films: {', '.join(data['films'])}."
-        )
-
-    def generate_combined_text_genre(self, data: Dict[str, Any]) -> str:
-        """
-        Generate combined text for genres.
-        """
-        return f"Genre: {data['name']}."

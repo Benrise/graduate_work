@@ -14,7 +14,13 @@ class Settings(BaseSettings):
     project_name: str = Field(..., alias='ASSISTANT_PROJECT_NAME')
     service_host: str = Field('assistant', alias='ASSISTANT_SERVICE_HOST')
     service_port: int = Field(8004, alias='ASSISTANT_SERVICE_PORT')
+    search_service_host: str = Field('search', alias='API_SERVICE_HOST')
+    search_service_port: int = Field(8002, alias='API_SERVICE_PORT')
     debug: bool = Field(True, alias='ASSISTANT_DEBUG')
+
+    @property
+    def search_service_url(self):
+        return f"http://{self.search_service_host}:{self.search_service_port}"
 
 
 settings = Settings()

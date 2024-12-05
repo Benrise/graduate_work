@@ -41,9 +41,8 @@ class SpeechService:
         final_result = json.loads(recognizer.FinalResult())
         return final_result.get("text", "")
 
-    def text_to_speech(self, text: str,) -> str:
-
-        result = self.speaker.to_mp3(
+    async def text_to_speech(self, text: str,) -> str:
+        path_to_file = self.speaker.to_mp3(
             text=text,
             name_text='answer',
             sample_rate=48000,
@@ -51,4 +50,4 @@ class SpeechService:
             speed=1.0
         )
 
-        return result[0]
+        return path_to_file[0]

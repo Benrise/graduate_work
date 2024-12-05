@@ -13,3 +13,6 @@ vosk==0.3.44
 python-multipart==0.0.17
 speakerpy==0.1.2
 nltk==3.9.1
+transformers==4.46.3
+sentence-transformers==3.3.1
+httpx==0.28.0
