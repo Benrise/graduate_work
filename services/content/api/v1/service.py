@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Request
 from db.elastic import get_search_service
 from utils.abstract import AsyncSearchService
 from utils.enums import Indecies
+from utils.logger import logger
 
 router = APIRouter()
 
@@ -18,7 +19,13 @@ async def search(
     },
     search_service: AsyncSearchService = Depends(get_search_service)
 ):
-    result = await search_service.search(index=index, body=body)
+    logger.info(f"Searcing with query: {body} in {index}")
+
+    payload = {
+        "query": body
+    }
+
+    result = await search_service.search(index=index, body=payload)
 
     if result and "error" in result:
         return {"error": result["error"], "details": result["details"]}
