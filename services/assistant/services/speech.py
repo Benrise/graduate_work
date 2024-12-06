@@ -1,13 +1,12 @@
-import wave
-import os
 import json
-
-from RUTTS import TTS
-from ruaccent import RUAccent
-
+import os
+import wave
 from pathlib import Path
+
 from fastapi import UploadFile
-from vosk import Model, KaldiRecognizer
+from ruaccent import RUAccent
+from RUTTS import TTS
+from vosk import KaldiRecognizer, Model
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, Request
-
 from db.elastic import get_search_service
+from fastapi import APIRouter, Depends, Request
 from utils.abstract import AsyncSearchService
 from utils.enums import Indecies
 from utils.logger import logger

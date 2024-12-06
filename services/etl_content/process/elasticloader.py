@@ -1,5 +1,5 @@
-import random
 import json
+import random
 from typing import Any, Dict, Text
 
 from utils.logger import logger

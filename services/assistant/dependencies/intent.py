@@ -1,6 +1,5 @@
 from services.intent import IntentClassifierService
 
-
 CLISSIFIER_MODEL_PATH = "./models/intent_model.pkl"
 VECTORIZER_MODEL_PATH = "./models/vectorizer.pkl"
 

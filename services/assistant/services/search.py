@@ -1,11 +1,10 @@
 import json
-import httpx
 import uuid
-from typing import Dict, Union, Any
+from typing import Any, Dict, Union
 
-from utils.abstract import AsyncCacheStorage
+import httpx
 from core.config import settings
-
+from utils.abstract import AsyncCacheStorage
 
 SEARCH_SERVICE_CACHE_EXPIRE_IN_SECONDS = 60 * 5
 

@@ -1,11 +1,11 @@
 import re
-import orjson
 from typing import List
 
-from flair.models import SequenceTagger
-from flair.data import Sentence
-from utils.abstract import AsyncCacheStorage
+import orjson
 from core.config import settings
+from flair.data import Sentence
+from flair.models import SequenceTagger
+from utils.abstract import AsyncCacheStorage
 
 
 class EntityExtractorService:

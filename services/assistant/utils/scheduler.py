@@ -1,5 +1,5 @@
-from typing import Callable
 import asyncio
+from typing import Callable
 
 
 async def scheduler(callback: Callable, interval_minutes: int = 30):

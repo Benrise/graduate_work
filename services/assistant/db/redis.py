@@ -1,4 +1,5 @@
 from typing import Union
+
 from fastapi import Depends
 from redis.asyncio import Redis
 from utils.abstract import AsyncCacheStorage

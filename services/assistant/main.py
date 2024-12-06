@@ -1,22 +1,20 @@
-import uvicorn
-import logging
 import asyncio
-
-from datetime import datetime
+import logging
 from contextlib import asynccontextmanager
+from datetime import datetime
 
-from fastapi import FastAPI, Request, status
-from fastapi.responses import ORJSONResponse
-from db import redis
-from redis.asyncio import Redis
-
+import uvicorn
+from api.v1 import search
 from core.config import settings
 from core.logger import LOGGING
+from db import redis
+from db.redis import RedisCacheAdapter
+from fastapi import FastAPI, Request, status
+from fastapi.responses import ORJSONResponse
+from managers.lifespan import LifespanManager
+from redis.asyncio import Redis
 from utils.logger import logger
 from utils.scheduler import scheduler
-from db.redis import RedisCacheAdapter
-from managers.lifespan import LifespanManager
-from api.v1 import search
 
 
 @asynccontextmanager

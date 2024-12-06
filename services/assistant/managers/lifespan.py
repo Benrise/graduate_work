@@ -1,10 +1,9 @@
-from flair.models import SequenceTagger
-
-from services.search import SearchService
-from utils.logger import logger
-from utils.abstract import AsyncCacheStorage
 from core.config import settings
 from dependencies import extractor
+from flair.models import SequenceTagger
+from services.search import SearchService
+from utils.abstract import AsyncCacheStorage
+from utils.logger import logger
 
 
 class LifespanManager:

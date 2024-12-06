@@ -1,6 +1,6 @@
 from pathlib import Path
-from services.speech import SpeechService
 
+from services.speech import SpeechService
 
 MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "vosk" / "vosk-model-small-ru-0.22"
 TTS_MODEL_NAME = 'TeraTTS/natasha-g2p-vits'

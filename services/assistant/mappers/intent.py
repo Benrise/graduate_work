@@ -1,7 +1,7 @@
-from typing import Dict, Callable, Awaitable, Union
+from typing import Awaitable, Callable, Dict, Union
 
-from utils.enums import Intents, Indecies
 from services.search import SearchService
+from utils.enums import Indecies, Intents
 
 ActionMethodType = Callable[[SearchService, list[str]], Awaitable[Dict]]
 ResponseType = Callable[[Dict, list[str]], str]

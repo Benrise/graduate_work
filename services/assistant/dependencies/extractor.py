@@ -1,10 +1,9 @@
 
-from flair.models import SequenceTagger
-
-from fastapi import Depends
-from utils.abstract import AsyncCacheStorage
 from db.redis import get_cache
+from fastapi import Depends
+from flair.models import SequenceTagger
 from services.extractor import EntityExtractorService
+from utils.abstract import AsyncCacheStorage
 
 NER_MODEL: SequenceTagger = None
 

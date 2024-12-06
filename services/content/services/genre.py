@@ -1,5 +1,5 @@
-from typing import List, Union
 from functools import lru_cache
+from typing import List, Union
 
 import orjson
 from db.elastic import get_search_service
