@@ -162,7 +162,7 @@ class FilmService:
         return sorted(titles)
 
     async def _titles_from_cache(self, cache_key: str) -> List[str] | None:
-        titles = await self.cache.get(cache_key)
+        titles: List[str] = await self.cache.get(cache_key)
         if not titles:
             return None
         return orjson.loads(titles)

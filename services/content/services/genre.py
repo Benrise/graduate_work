@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from functools import lru_cache
 
 import orjson
@@ -41,7 +41,7 @@ class GenreService:
     async def _put_genre_to_cache(self, genre: GenreModel):
         await self.cache.set(genre.uuid, genre.model_dump_json(), GENRE_CACHE_EXPIRE_IN_SECONDS)
 
-    async def get_genres(self, size: int) -> list[GenreModel]:
+    async def get_genres(self, size: int) -> List[GenreModel]:
         cache_key = 'genre:all'
         body = build_body(size=size)
         genres = await self._genres_from_cache(cache_key)
@@ -62,19 +62,19 @@ class GenreService:
         await self._put_titles_to_cache(titles, cache_key)
         return titles
 
-    async def _get_genres_from_search_service(self, body) -> list[GenreModel] | None:
+    async def _get_genres_from_search_service(self, body) -> List[GenreModel] | None:
         response = await self.search_service.search(index='genres', body=body)
         genres: list[GenreModel] = [GenreModel(**doc['_source']) for doc in response['hits']['hits']]
         return genres
 
-    async def _genres_from_cache(self, cache_key: str) -> list[GenreModel] | None:
+    async def _genres_from_cache(self, cache_key: str) -> List[GenreModel] | None:
         genres = await self.cache.get(cache_key)
         if not genres:
             return None
         genres_list: list[GenreModel] = [GenreModel(**genre) for genre in orjson.loads(genres)]
         return genres_list
 
-    async def _put_genres_to_cache(self, genres: list[GenreModel], cache_key: str):
+    async def _put_genres_to_cache(self, genres: List[GenreModel], cache_key: str):
         await self.cache.set(
             cache_key,
             orjson.dumps(jsonable_encoder(genres)),
@@ -109,13 +109,13 @@ class GenreService:
 
         return sorted(genre_titles)
 
-    async def _titles_from_cache(self, cache_key: str) -> List[str] | None:
-        titles = await self.cache.get(cache_key)
+    async def _titles_from_cache(self, cache_key: str) -> Union[List[str], None]:
+        titles: List[str] = await self.cache.get(cache_key)
         if not titles:
             return None
         return orjson.loads(titles)
 
-    async def _put_titles_to_cache(self, titles: List[str], cache_key: str):
+    async def _put_titles_to_cache(self, titles: List[str], cache_key: str) -> None:
         await self.cache.set(
             cache_key,
             orjson.dumps(titles),

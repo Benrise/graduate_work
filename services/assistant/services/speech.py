@@ -45,7 +45,7 @@ class SpeechService:
             recognizer.AcceptWaveform(data)
 
         final_result = json.loads(recognizer.FinalResult())
-        return final_result.get("text", "")
+        return str(final_result.get("text", ""))
 
     async def text_to_speech(self, text: str, filename: str) -> str:
         text = self.accentizer.process_all(text)

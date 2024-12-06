@@ -9,4 +9,4 @@ class IntentClassifierService:
     async def predict_intent(self, text: str) -> str:
         text_tfidf = self.vectorizer.transform([text])
         intent = self.model.predict(text_tfidf)[0]
-        return intent
+        return str(intent)

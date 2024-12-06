@@ -1,7 +1,7 @@
 import json
 import httpx
 import uuid
-from typing import Dict, Any
+from typing import Dict, Union, Any
 
 from utils.abstract import AsyncCacheStorage
 from core.config import settings
@@ -31,7 +31,7 @@ class SearchService:
 
         response.raise_for_status()
 
-        data = response.json()
+        data: Dict[str, Any] = response.json()
 
         await self._set_to_cache(cache_key, data)
         return data
@@ -52,7 +52,7 @@ class SearchService:
 
         response.raise_for_status()
 
-        data = response.json()
+        data: Dict[str, Any] = response.json()
 
         await self._set_to_cache(cache_key, data)
         return data
@@ -73,7 +73,7 @@ class SearchService:
 
         response.raise_for_status()
 
-        data = response.json()
+        data: Dict[str, Any] = response.json()
 
         await self._set_to_cache(cache_key, data)
         return data
@@ -82,7 +82,7 @@ class SearchService:
         serialized_value = json.dumps(value)
         await self.cache.set(key, serialized_value, expire)
 
-    async def _get_from_cache(self, key: str) -> Any:
+    async def _get_from_cache(self, key: str) -> Union[Dict[str, Any], None]:
         cached_data = await self.cache.get(key)
         if cached_data:
             return json.loads(cached_data)

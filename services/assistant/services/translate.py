@@ -10,4 +10,4 @@ class TranslationService:
     async def translate(self, text: str) -> str:
         inputs = self.tokenizer(text, return_tensors="pt", padding=True)
         translated = self.model.generate(**inputs)
-        return self.tokenizer.decode(translated[0], skip_special_tokens=True)
+        return str(self.tokenizer.decode(translated[0], skip_special_tokens=True))
