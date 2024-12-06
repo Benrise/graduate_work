@@ -120,6 +120,61 @@ class FilmService:
             FILM_CACHE_EXPIRE_IN_SECONDS
         )
 
+    async def get_all_titles(self) -> List[str]:
+        cache_key = "film:all_titles"
+
+        titles = await self._titles_from_cache(cache_key)
+        if titles:
+            return titles
+
+        titles = await self._fetch_titles_from_elasticsearch()
+
+        await self._put_titles_to_cache(titles, cache_key)
+
+        return titles
+
+    async def _fetch_titles_from_elasticsearch(self) -> List[str]:
+        titles = []
+        size = 100
+        from_ = 0
+        while True:
+            body = {
+                "from": from_,
+                "size": size,
+                "_source": ["title"],
+                "query": {
+                    "match_all": {}
+                }
+            }
+            response = await self.search_service.search(
+                index="movies",
+                body=body,
+                _source_includes=["title"]
+            )
+            print('==='*100, response)
+
+            hits = response['hits']['hits']
+            if not hits:
+                break
+
+            titles.extend(hit["_source"]["title"] for hit in hits)
+            from_ += size
+
+        return titles
+
+    async def _titles_from_cache(self, cache_key: str) -> List[str] | None:
+        titles = await self.cache.get(cache_key)
+        if not titles:
+            return None
+        return orjson.loads(titles)
+
+    async def _put_titles_to_cache(self, titles: List[str], cache_key: str):
+        await self.cache.set(
+            cache_key,
+            orjson.dumps(titles),
+            FILM_CACHE_EXPIRE_IN_SECONDS
+        )
+
 
 @lru_cache()
 def get_film_service(

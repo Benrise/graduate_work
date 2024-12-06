@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import List
 
 import core.config as config
 from dependencies.ugc import get_ugc_service
@@ -128,3 +129,17 @@ async def films_rating(
     return [FilmRating(uuid=film.uuid,
                        title=film.title,
                        imdb_rating=film.imdb_rating) for film in films]
+
+
+@router.get('/titles/',
+            response_model=List[str],
+            summary='Получить список всех заголовков фильмов',
+            description='Формат массива данных ответа: [title1, title2, title3, ...]')
+async def film_titles(
+        _: Request,
+        film_service: FilmService = Depends(get_film_service),
+) -> List[str]:
+
+    titles = await film_service.get_all_titles()
+
+    return titles
