@@ -25,7 +25,7 @@ class SpeechService:
 
         self.accentizer = RUAccent()
         self.accentizer.load(
-            omograph_model_size='small_poetry',
+            omograph_model_size='medium_poetry',
             use_dictionary=True,
             workdir=MODELS_DIR
         )
