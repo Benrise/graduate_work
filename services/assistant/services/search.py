@@ -82,8 +82,8 @@ class SearchService:
         serialized_value = json.dumps(value)
         await self.cache.set(key, serialized_value, expire)
 
-    async def _get_from_cache(self, key: str) -> dict:
-        cached_data: Dict[str, Any] = await self.cache.get(key)
+    async def _get_from_cache(self, key: str) -> Union[dict, None]:
+        cached_data: str = await self.cache.get(key)
         if not cached_data:
             return None
         return dict(json.loads(cached_data))
