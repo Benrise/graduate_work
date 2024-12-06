@@ -1,32 +1,44 @@
-import spacy
 import re
+import orjson
 from typing import List
+
+from flair.models import SequenceTagger
+from flair.data import Sentence
+from utils.abstract import AsyncCacheStorage
+from core.config import settings
 
 
 class EntityExtractorService:
-    def __init__(self, model: str, genres: List[str], films: List[str]):
-        self.nlp = spacy.load(model)
-        self.genres_titles = genres
-        self.films_titles = films
+    def __init__(self, cache: AsyncCacheStorage, model: SequenceTagger):
+        self.model = model
+        self.cache = cache
 
-    def extract_persons(self, text: str) -> List[str]:
-        doc = self.nlp(text)
-        return [ent.text for ent in doc.ents if ent.label_ == "PERSON"]
+    async def extract_persons(self, text: str) -> List[str]:
+        sentence = Sentence(text)
+        self.model.predict(sentence)
 
-    def extract_genres(self, text: str) -> List[str]:
-        doc = self.nlp(text)
+        return [entity.text for entity in sentence.get_spans('ner') if entity.get_label("ner").value == "PER"]
+
+    async def extract_genres(self, text: str) -> List[str]:
         genres = []
-        for genre in self.genres_titles:
+        genres_titles = await self._get_titles_from_cache(settings.titles_genres_cache_key)
+        for genre in genres_titles:
             pattern = re.compile(rf"\b{re.escape(genre.lower())}\b", re.IGNORECASE)
-            if pattern.search(doc.text):
+            if pattern.search(text):
                 genres.append(genre)
         return genres
 
-    def extract_films(self, text: str) -> List[str]:
-        doc = self.nlp(text)
+    async def extract_films(self, text: str) -> List[str]:
         films = []
-        for film in self.films_titles:
+        films_titles = await self._get_titles_from_cache(settings.titles_films_cache_key)
+        for film in films_titles:
             pattern = re.compile(rf"\b{re.escape(film.lower())}\b", re.IGNORECASE)
-            if pattern.findall(doc.text):
+            if pattern.findall(text):
                 films.append(film)
         return films
+
+    async def _get_titles_from_cache(self, cache_key: str):
+        titles = await self.cache.get(cache_key)
+        if not titles:
+            return None
+        return orjson.loads(titles)

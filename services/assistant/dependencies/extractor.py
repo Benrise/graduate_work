@@ -1,26 +1,16 @@
 
+from flair.models import SequenceTagger
 
-from typing import List
+from fastapi import Depends
+from utils.abstract import AsyncCacheStorage
+from db.redis import get_cache
 from services.extractor import EntityExtractorService
-from utils.logger import logger
-from core.config import settings
-from services.search import SearchService
 
-GENRES_TITLES_LIST: List[str] = None
-FILMS_TITLES_LIST: List[str] = None
+NER_MODEL: SequenceTagger = None
 
 
-def get_entity_extractor_service() -> EntityExtractorService:
+def get_entity_extractor_service(cache: AsyncCacheStorage = Depends(get_cache)) -> EntityExtractorService:
     return EntityExtractorService(
-        model='en_core_web_sm',
-        genres=GENRES_TITLES_LIST,
-        films=FILMS_TITLES_LIST
+        cache=cache,
+        model=NER_MODEL,
     )
-
-
-async def update_data_titles():
-    global GENRES_TITLES_LIST, FILMS_TITLES_LIST
-    search_service = SearchService(settings.search_service_url)
-    GENRES_TITLES_LIST = await search_service.get_genres_titles()
-    FILMS_TITLES_LIST = await search_service.get_films_titles()
-    logger.info("Genres and Films titles was successfully updated")

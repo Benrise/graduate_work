@@ -7,23 +7,31 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import ORJSONResponse
+from db import redis
+from redis.asyncio import Redis
 
 from core.config import settings
 from core.logger import LOGGING
-from dependencies.extractor import update_data_titles
 from utils.logger import logger
 from utils.scheduler import scheduler
+from db.redis import RedisCacheAdapter
+from managers.lifespan import LifespanManager
 from api.v1 import search
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    redis.redis = Redis(host=settings.redis_host, port=settings.redis_port)
+    cache_adapter = RedisCacheAdapter(redis.redis)
+    lifespan_manager = LifespanManager(cache=cache_adapter)
+
     asyncio.create_task(
         scheduler(
-            update_data_titles,
+            lifespan_manager.update_data_titles,
             settings.titles_update_interval
         )
     )
+    await lifespan_manager.upload_ner_model()
     yield
 
 app = FastAPI(

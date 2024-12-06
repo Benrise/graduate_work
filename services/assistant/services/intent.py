@@ -6,7 +6,7 @@ class IntentClassifierService:
         self.model = joblib.load(model_path)
         self.vectorizer = joblib.load(vectorizer_path)
 
-    def predict_intent(self, text: str) -> str:
+    async def predict_intent(self, text: str) -> str:
         text_tfidf = self.vectorizer.transform([text])
         intent = self.model.predict(text_tfidf)[0]
         return intent

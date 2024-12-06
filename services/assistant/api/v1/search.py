@@ -28,10 +28,10 @@ async def search(
     search_service: SearchService = Depends(get_search_service),
 ):
 
-    intent = intent_service.predict_intent(transcript)
-    persons = extractor_service.extract_persons(transcript)
-    genres = extractor_service.extract_genres(transcript)
-    films = extractor_service.extract_films(transcript)
+    intent = await intent_service.predict_intent(transcript)
+    persons = await extractor_service.extract_persons(transcript)
+    genres = await extractor_service.extract_genres(transcript)
+    films = await extractor_service.extract_films(transcript)
 
     return {
         "intent": intent,

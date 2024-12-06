@@ -1,7 +1,9 @@
+import uuid
 import json
 import os
 import logging
 from logging.handlers import RotatingFileHandler
+from core.config import settings
 
 LOGS_DIR = './logs'
 
@@ -12,12 +14,12 @@ class JsonFormatter(logging.Formatter):
     def format(self, record):
         log_message = {
             'message': record.getMessage(),
-            'request_id': record.request_id,
-            'host': record.host,
-            'method': record.method,
-            'query_params': record.query_params,
-            'status_code': record.status_code,
-            'elapsed_time': record.elapsed_time
+            'request_id': getattr(record, 'request_id', uuid.uuid4().hex),
+            'host': getattr(record, 'host', settings.service_host),
+            'method': getattr(record, 'method', None),
+            'query_params': getattr(record, 'query_params', None),
+            'status_code': getattr(record, 'status_code', None),
+            'elapsed_time': getattr(record, 'elapsed_time', None)
         }
 
         return json.dumps(log_message)

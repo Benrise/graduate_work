@@ -1,20 +1,15 @@
-FROM python:3.9-buster
+FROM python:3.9-slim
 
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     espeak \
-    ffmpeg \
-    python3-dev \
-    libsndfile-dev \
-    gcc libmagic-dev \
-    build-essential \
-    g++
+    ffmpeg 
 
 COPY requirements.txt .
 
 RUN pip3 install --upgrade pip \
-    && pip3 install --prefer-binary -r requirements.txt
+    && pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
 COPY ./docker-entrypoint.sh /usr/local/bin/

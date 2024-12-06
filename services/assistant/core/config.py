@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     search_service_host: str = Field('search', alias='API_SERVICE_HOST')
     search_service_port: int = Field(8002, alias='API_SERVICE_PORT')
     titles_update_interval: int = Field(30, alias='ASSISTANT_TITLES_UPDATE_INTERVAL_MINUTES')
+    titles_films_cache_key: str = 'search:films_titles'
+    titles_genres_cache_key: str = 'search:genres_titles'
+    redis_host: str = Field('redis', alias='ASSISTAN_REDIS_HOST')
+    redis_port: int = Field(6379, alias='ASSISTANT_REDIS_PORT')
     debug: bool = Field(True, alias='ASSISTANT_DEBUG')
 
     @property
