@@ -1,3 +1,4 @@
+import random
 import json
 from typing import Any, Dict, Text
 
@@ -64,6 +65,7 @@ class ElasticLoader:
         actors = data['actors']
         writers = data['writers']
         directors = data['directors']
+        duration = data.get('duration', random.randint(60, 180))
 
         if not self._check_doc_exists(index, id):
             self.client.index(
@@ -77,7 +79,8 @@ class ElasticLoader:
                     "genres": genres,
                     "actors": actors,
                     "writers": writers,
-                    "directors": directors
+                    "directors": directors,
+                    "duration": duration,
                 },
             )
 

@@ -57,6 +57,9 @@
       "imdb_rating": {
         "type": "float"
       },
+      "duration": {
+        "type": "integer"
+      },
       "description": {
         "type": "text",
         "analyzer": "ru_en"
