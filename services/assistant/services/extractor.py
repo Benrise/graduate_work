@@ -33,7 +33,7 @@ class EntityExtractorService:
         films_titles = await self._get_titles_from_cache(settings.titles_films_cache_key)
         for film in films_titles:
             pattern = re.compile(rf"\b{re.escape(film.lower())}\b", re.IGNORECASE)
-            if pattern.findall(text):
+            if pattern.findall(text) and film not in films:
                 films.append(film)
         return films
 
