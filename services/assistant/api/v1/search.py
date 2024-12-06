@@ -63,8 +63,11 @@ async def search(
     else:
         raise Exception("Намерение не поддерживается.")
 
+    result_audio_file = await speech_service.text_to_speech(response_message, "response.mp3")
+
     return {
         "response": response_message,
+        "result_audio_file": result_audio_file,
         "transcript": transcript,
         "transcript_en": transcript_en,
         "intent": intent,

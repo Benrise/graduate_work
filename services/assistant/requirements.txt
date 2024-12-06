@@ -10,10 +10,12 @@ requests==2.31.0
 python-logstash==0.4.8
 orjson==3.10.2
 python-multipart==0.0.17
-pyttsx3==2.98
 httpx==0.28.0
 joblib==1.4.2
 vosk==0.3.44
 flair==0.14.0
 redis==5.0.4
+huggingface-hub>=0.23.2,<1.0
 transformers[torch]==4.46.3
+rutts==0.1.13
+ruaccent==1.5.8.3

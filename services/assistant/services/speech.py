@@ -1,7 +1,9 @@
 import wave
 import os
 import json
-import pyttsx3
+
+from RUTTS import TTS
+from ruaccent import RUAccent
 
 from pathlib import Path
 from fastapi import UploadFile
@@ -14,16 +16,15 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class SpeechService:
-    def __init__(self, recognize_model_path: str, language: str):
+    def __init__(self, recognize_model_path: str, tts_model_name: str):
         self.recognizer = Model(recognize_model_path)
+        self.tts = TTS(tts_model_name, add_time_to_end=0.8)
 
-        self.engine = pyttsx3.init()
-        self.engine.setProperty('rate', 150)
-        self.engine.setProperty('volume', 1)
-        self.engine.setProperty('voice', language)
+        self.accentizer = RUAccent(workdir="../data/ruaccent")
+        self.accentizer.load(omograph_model_size='small_poetry', use_dictionary=True)
 
     async def transcribe_audio(self, file: UploadFile) -> str:
-        
+
         file_location = DATA_DIR / f"temp_{file.filename}"
 
         with open(file_location, "wb") as f:
@@ -47,9 +48,11 @@ class SpeechService:
         return final_result.get("text", "")
 
     async def text_to_speech(self, text: str, filename: str) -> str:
-        path_to_file = DATA_DIR / filename
+        text = self.accentizer.process_all(text)
 
-        self.engine.save_to_file(text, str(path_to_file))
-        self.engine.runAndWait()
+        audio = self.tts(text, length_scale=1.2)
+
+        path_to_file = DATA_DIR / filename
+        self.tts.save_wav(audio, str(path_to_file))
 
         return str(path_to_file)
