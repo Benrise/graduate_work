@@ -165,7 +165,8 @@ class FilmService:
         titles: List[str] = await self.cache.get(cache_key)
         if not titles:
             return None
-        return orjson.loads(titles)
+        titles = orjson.loads(titles)
+        return titles
 
     async def _put_titles_to_cache(self, titles: List[str], cache_key: str):
         await self.cache.set(
