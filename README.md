@@ -22,7 +22,8 @@
 ### Примеры
 
 **Намерение:** пользователь хочет получить авторов фильма
-![image](https://github.com/user-attachments/assets/47ec820e-e38d-498a-905d-fa34d91c23a3)
+![image](https://github.com/user-attachments/assets/0c9d4e52-e959-40be-80b6-f0aebe62675a)
+
 
 **Намерение:** пользователь хочет узнать продолжительность фильма
 ![image](https://github.com/user-attachments/assets/78504771-07f5-4bcd-b904-5335892c191c)
