@@ -1,5 +1,5 @@
 #!/bin/bash
 
-python -c "import nltk; nltk.download('punkt_tab')"
+python -m spacy download en_core_web_sm
 
 python main.py

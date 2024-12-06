@@ -1,5 +1,6 @@
 import uvicorn
 import logging
+import asyncio
 
 from datetime import datetime
 from contextlib import asynccontextmanager
@@ -9,12 +10,20 @@ from fastapi.responses import ORJSONResponse
 
 from core.config import settings
 from core.logger import LOGGING
+from dependencies.extractor import update_data_titles
 from utils.logger import logger
+from utils.scheduler import scheduler
 from api.v1 import search
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    asyncio.create_task(
+        scheduler(
+            update_data_titles,
+            settings.titles_update_interval
+        )
+    )
     yield
 
 app = FastAPI(

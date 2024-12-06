@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     service_port: int = Field(8004, alias='ASSISTANT_SERVICE_PORT')
     search_service_host: str = Field('search', alias='API_SERVICE_HOST')
     search_service_port: int = Field(8002, alias='API_SERVICE_PORT')
+    titles_update_interval: int = Field(30, alias='ASSISTANT_TITLES_UPDATE_INTERVAL_MINUTES')
     debug: bool = Field(True, alias='ASSISTANT_DEBUG')
 
     @property
