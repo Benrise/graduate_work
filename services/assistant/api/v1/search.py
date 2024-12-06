@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends, File, UploadFile
-# from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse
 
-# from services.speech import SpeechService
+from services.speech import SpeechService
 from services.intent import IntentClassifierService
 from services.search import SearchService
 from services.extractor import EntityExtractorService
@@ -9,14 +9,11 @@ from services.translate import TranslationService
 
 from utils.logger import logger
 
-# from dependencies.speech import get_speech_service
+from dependencies.speech import get_speech_service
 from dependencies.intent import get_intent_classifier_service
 from dependencies.search import get_search_service
 from dependencies.extractor import get_entity_extractor_service
 from dependencies.translate import get_translation_service
-
-# from utils.enums import Indecies
-
 
 router = APIRouter()
 
@@ -24,14 +21,16 @@ router = APIRouter()
 @router.post("/")
 async def search(
     request: Request,
-    # audio_file: UploadFile = File(...),
-    transcript: str,
-    # speech_service: SpeechService = Depends(get_speech_service),
+    audio_file: UploadFile = File(...),
+    speech_service: SpeechService = Depends(get_speech_service),
     intent_service: IntentClassifierService = Depends(get_intent_classifier_service),
     extractor_service: EntityExtractorService = Depends(get_entity_extractor_service),
     translate_service: TranslationService = Depends(get_translation_service),
     search_service: SearchService = Depends(get_search_service),
 ):
+    logger.info("Transcribing...")
+    transcript = await speech_service.transcribe_audio(audio_file)
+    logger.info(f"Transcribed: {transcript}")
     logger.info("Getting intent...")
     intent = await intent_service.predict_intent(transcript)
     logger.info(f"Got intent: {intent}")
