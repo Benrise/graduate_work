@@ -120,7 +120,7 @@ class FilmService:
             FILM_CACHE_EXPIRE_IN_SECONDS
         )
 
-    async def get_all_titles(self) -> List[str]:
+    async def get_films_titles(self) -> List[str]:
         cache_key = "film:all_titles"
 
         titles = await self._titles_from_cache(cache_key)
@@ -151,7 +151,6 @@ class FilmService:
                 body=body,
                 _source_includes=["title"]
             )
-            print('==='*100, response)
 
             hits = response['hits']['hits']
             if not hits:
@@ -160,7 +159,7 @@ class FilmService:
             titles.extend(hit["_source"]["title"] for hit in hits)
             from_ += size
 
-        return titles
+        return sorted(titles)
 
     async def _titles_from_cache(self, cache_key: str) -> List[str] | None:
         titles = await self.cache.get(cache_key)

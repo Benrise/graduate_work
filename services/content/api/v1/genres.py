@@ -29,7 +29,18 @@ async def film_details(genre_id: str, genre_service: GenreService = Depends(get_
             summary='Получить список жанров',
             description='Формат массива данных ответа: uuid, name, ')
 async def genre_list(film_service: GenreService = Depends(get_genre_service)) -> List[Genre]:
-    films: List[GenreModel] = await film_service.get_genres(size=config.MAX_GENRES_SIZE)
-    if not films:
+    genres: List[GenreModel] = await film_service.get_genres(size=config.MAX_GENRES_SIZE)
+    if not genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='genres not found')
-    return films
+    return genres
+
+
+@router.get('/titles/',
+            response_model=List[str],
+            summary='Получить список всех заголовков жанров',
+            description='Формат массива данных ответа: [name1, name2, name3, ...]')
+async def genre_titles(film_service: GenreService = Depends(get_genre_service)) -> List[str]:
+    genres: List[str] = await film_service.get_genre_titles()
+    if not genres:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='genres not found')
+    return genres

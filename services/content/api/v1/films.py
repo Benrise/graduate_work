@@ -140,6 +140,6 @@ async def film_titles(
         film_service: FilmService = Depends(get_film_service),
 ) -> List[str]:
 
-    titles = await film_service.get_all_titles()
+    titles = await film_service.get_films_titles()
 
     return titles

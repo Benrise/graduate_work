@@ -1,3 +1,4 @@
+from typing import List
 from functools import lru_cache
 
 import orjson
@@ -52,6 +53,15 @@ class GenreService:
         await self._put_genres_to_cache(genres, cache_key)
         return genres
 
+    async def get_genre_titles(self) -> List[str]:
+        cache_key = 'genre:titles'
+        titles = await self._titles_from_cache(cache_key)
+        if titles:
+            return titles
+        titles = await self._fetch_genre_titles()
+        await self._put_titles_to_cache(titles, cache_key)
+        return titles
+
     async def _get_genres_from_search_service(self, body) -> list[GenreModel] | None:
         response = await self.search_service.search(index='genres', body=body)
         genres: list[GenreModel] = [GenreModel(**doc['_source']) for doc in response['hits']['hits']]
@@ -61,13 +71,54 @@ class GenreService:
         genres = await self.cache.get(cache_key)
         if not genres:
             return None
-        genres_list: list[GenreModel] = [GenreModel.model_validate_json(genre) for genre in orjson.loads(genres)]
+        genres_list: list[GenreModel] = [GenreModel(**genre) for genre in orjson.loads(genres)]
         return genres_list
 
     async def _put_genres_to_cache(self, genres: list[GenreModel], cache_key: str):
         await self.cache.set(
             cache_key,
             orjson.dumps(jsonable_encoder(genres)),
+            GENRE_CACHE_EXPIRE_IN_SECONDS
+        )
+
+    async def _fetch_genre_titles(self) -> List[str]:
+        genre_titles = []
+        size = 100
+        from_ = 0
+        while True:
+            body = {
+                "from": from_,
+                "size": size,
+                "_source": ["name"],
+                "query": {
+                    "match_all": {}
+                }
+            }
+            response = await self.search_service.search(
+                index="genres",
+                body=body,
+                _source_includes=["name"]
+            )
+
+            hits = response['hits']['hits']
+            if not hits:
+                break
+
+            genre_titles.extend(hit["_source"]["name"] for hit in hits)
+            from_ += size
+
+        return sorted(genre_titles)
+
+    async def _titles_from_cache(self, cache_key: str) -> List[str] | None:
+        titles = await self.cache.get(cache_key)
+        if not titles:
+            return None
+        return orjson.loads(titles)
+
+    async def _put_titles_to_cache(self, titles: List[str], cache_key: str):
+        await self.cache.set(
+            cache_key,
+            orjson.dumps(titles),
             GENRE_CACHE_EXPIRE_IN_SECONDS
         )
 
