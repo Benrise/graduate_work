@@ -86,6 +86,4 @@ class SearchService:
         cached_data: Dict[str, Any] = await self.cache.get(key)
         if not cached_data:
             return None
-        if isinstance(cached_data, str):
-            cached_data = json.loads(cached_data)
-        return cached_data
+        return json.loads(cached_data)

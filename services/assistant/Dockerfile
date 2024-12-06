@@ -5,7 +5,8 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     espeak \
     ffmpeg \
-    libatomic1
+    libatomic1 \
+    build-essential
 
 COPY requirements.txt .
 

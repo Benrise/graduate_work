@@ -10,18 +10,25 @@ from fastapi import UploadFile
 from vosk import Model, KaldiRecognizer
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 DATA_DIR = BASE_DIR / "data"
+MODELS_DIR = DATA_DIR / "models"
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class SpeechService:
     def __init__(self, recognize_model_path: str, tts_model_name: str):
         self.recognizer = Model(recognize_model_path)
-        self.tts = TTS(tts_model_name, add_time_to_end=0.8)
+        self.tts = TTS(tts_model_name, save_path=MODELS_DIR)
 
-        self.accentizer = RUAccent(workdir="../data/ruaccent")
-        self.accentizer.load(omograph_model_size='small_poetry', use_dictionary=True)
+        self.accentizer = RUAccent()
+        self.accentizer.load(
+            omograph_model_size='small_poetry',
+            use_dictionary=True,
+            workdir=MODELS_DIR
+        )
 
     async def transcribe_audio(self, file: UploadFile) -> str:
 
@@ -50,7 +57,7 @@ class SpeechService:
     async def text_to_speech(self, text: str, filename: str) -> str:
         text = self.accentizer.process_all(text)
 
-        audio = self.tts(text, length_scale=1.2)
+        audio = self.tts(text)
 
         path_to_file = DATA_DIR / filename
         self.tts.save_wav(audio, str(path_to_file))
