@@ -1,16 +1,19 @@
+from fastapi import APIRouter, Depends, File, Request, UploadFile
+
 from dependencies.extractor import get_entity_extractor_service
 from dependencies.intent import get_intent_classifier_service
 from dependencies.search import get_search_service
 from dependencies.speech import get_speech_service
 from dependencies.translate import get_translation_service
-from fastapi import APIRouter, Depends, Request, File, Request, UploadFile
-from utils.enums import Intents
+
 from mappers.intent import INTENT_TO_ACTION_MAPPING
 from services.extractor import EntityExtractorService
 from services.intent import IntentClassifierService
 from services.search import SearchService
 from services.speech import SpeechService
 from services.translate import TranslationService
+
+from utils.enums import Intents
 from utils.logger import logger
 
 router = APIRouter()
