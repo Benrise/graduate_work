@@ -36,10 +36,6 @@ jobs:
         run: |
           autoflake --in-place --remove-all-unused-imports --remove-unused-variables --recursive .
 
-      - name: Run isort to sort imports
-        run: |
-          isort .
-
       - name: Run autopep8 to format code
         run: |
           autopep8 . --recursive --in-place --pep8-passes 2000 --verbose
