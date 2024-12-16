@@ -12,3 +12,4 @@ motor==3.6.0
 beanie==1.27.0
 hawkcatcher==3.4.1
 python-logstash==0.4.8
+gunicorn==23.0.0
